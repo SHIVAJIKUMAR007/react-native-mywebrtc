@@ -17,6 +17,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.oney.WebRTCModule.videoEffect.ProcessorProvider;
+import com.oney.WebRTCModule.videoEffect.VideoEffectProcessor;
+import com.oney.WebRTCModule.videoEffect.VideoFrameProcessor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,10 +27,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.webrtc.*;
-
-import com.oney.WebRTCModule.videoEffect.ProcessorMap;
-import com.oney.WebRTCModule.videoEffect.VideoFrameProcessor;
-import com.oney.WebRTCModule.videoEffect.VideoEffectProcessor;
 
 /**
  * The implementation of {@code getUserMedia} extracted into a separate file in
@@ -319,7 +318,6 @@ class GetUserMediaImpl {
             if (track == null) {
                 continue;
             }
-            // track.captureFrame(); // this need to be done
 
             if (track instanceof AudioTrack) {
                 mediaStream.addTrack((AudioTrack) track);
@@ -383,11 +381,9 @@ class GetUserMediaImpl {
         }
 
         VideoSource videoSource = pcFactory.createVideoSource(videoCapturer.isScreencast());
-
         videoCapturer.initialize(surfaceTextureHelper, reactContext, videoSource.getCapturerObserver());
 
         String id = UUID.randomUUID().toString();
-
         VideoTrack track = pcFactory.createVideoTrack(id, videoSource);
 
         track.setEnabled(true);
@@ -399,14 +395,20 @@ class GetUserMediaImpl {
     }
 
     void setVideoEffect(String trackId, String name) {
-        TrackPrivate oldTrack = tracks.get(trackId);
+        TrackPrivate track = tracks.get(trackId);
 
-        if (oldTrack != null && oldTrack.videoCaptureController instanceof CameraCaptureController) {
-            VideoSource videoSource = (VideoSource) oldTrack.mediaSource;
-            SurfaceTextureHelper surfaceTextureHelper = (SurfaceTextureHelper) oldTrack.surfaceTextureHelper;
+        if (track != null && track.videoCaptureController instanceof CameraCaptureController) {
+            VideoSource videoSource = (VideoSource) track.mediaSource;
+            SurfaceTextureHelper surfaceTextureHelper = (SurfaceTextureHelper) track.surfaceTextureHelper;
             /// here set videoSource processer VideoProcessor
+
+            if (surfaceTextureHelper == null) {
+                Log.d(TAG, "Error creating SurfaceTextureHelper");
+                return;
+            }
+
             if (name != null) {
-                VideoFrameProcessor videoFrameProcessor = ProcessorMap.getProcessor(name);
+                VideoFrameProcessor videoFrameProcessor = ProcessorProvider.getProcessor(name);
 
                 if (videoFrameProcessor == null) {
                     Log.d(TAG, "no videoFrameProcessor associated with this name");

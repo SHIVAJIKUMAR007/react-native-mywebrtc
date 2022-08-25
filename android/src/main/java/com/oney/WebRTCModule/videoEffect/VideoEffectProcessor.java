@@ -3,13 +3,9 @@ package com.oney.WebRTCModule.videoEffect;
 import org.webrtc.*;
 
 public class VideoEffectProcessor implements VideoProcessor {
-    private SurfaceTextureHelper textureHelper;
     private VideoSink mSink;
-    private VideoFrameProcessor videoFrameProcessor = null;
-
-    public VideoEffectProcessor(SurfaceTextureHelper textureHelper) {
-        this.textureHelper = textureHelper;
-    }
+    final private SurfaceTextureHelper textureHelper;
+    final private VideoFrameProcessor videoFrameProcessor;
 
     public VideoEffectProcessor(VideoFrameProcessor processor, SurfaceTextureHelper textureHelper) {
         this.textureHelper = textureHelper;
@@ -33,9 +29,13 @@ public class VideoEffectProcessor implements VideoProcessor {
 
     @Override
     public void onFrameCaptured(VideoFrame frame) {
+        VideoFrame outputFrame = videoFrameProcessor.process(frame, textureHelper);
 
-        VideoFrame out = videoFrameProcessor.process(frame, textureHelper);
-        mSink.onFrame(out);
+        if (outputFrame == null) {
+            mSink.onFrame(frame);
+            return;
+        }
+        mSink.onFrame(outputFrame);
         frame.release();
     }
 

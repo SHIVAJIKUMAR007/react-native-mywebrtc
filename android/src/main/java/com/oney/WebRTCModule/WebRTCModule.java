@@ -166,14 +166,7 @@ public class WebRTCModule extends ReactContextBaseJavaModule {
         for (int i = 0; i < size; i++) {
             ReadableMap iceServerMap = iceServersArray.getMap(i);
             boolean hasUsernameAndCredential = iceServerMap.hasKey("username") && iceServerMap.hasKey("credential");
-            if (iceServerMap.hasKey("url")) {
-                if (hasUsernameAndCredential) {
-                    iceServers.add(createIceServer(iceServerMap.getString("url"), iceServerMap.getString("username"),
-                            iceServerMap.getString("credential")));
-                } else {
-                    iceServers.add(createIceServer(iceServerMap.getString("url")));
-                }
-            } else if (iceServerMap.hasKey("urls")) {
+            if (iceServerMap.hasKey("urls")) {
                 switch (iceServerMap.getType("urls")) {
                     case String:
                         if (hasUsernameAndCredential) {
@@ -978,12 +971,7 @@ public class WebRTCModule extends ReactContextBaseJavaModule {
     public void setVideoEffect(String id, String name) {
         // regster video effect here
         ThreadUtils.runOnExecutor(() -> {
-            MediaStreamTrack track = getLocalTrack(id);
-
-            if (track != null) {
-                getUserMediaImpl.setVideoEffect(id, name);
-            }
+            getUserMediaImpl.setVideoEffect(id, name);
         });
     }
-
 }

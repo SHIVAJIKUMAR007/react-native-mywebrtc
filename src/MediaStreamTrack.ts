@@ -10,7 +10,6 @@ const MEDIA_STREAM_TRACK_EVENTS = ['ended', 'mute', 'unmute'];
 
 type MediaStreamTrackState = 'live' | 'ended';
 
-
 class MediaStreamTrack extends defineCustomEventTarget(...MEDIA_STREAM_TRACK_EVENTS) {
     _constraints: object;
     _enabled: boolean;
@@ -56,7 +55,7 @@ class MediaStreamTrack extends defineCustomEventTarget(...MEDIA_STREAM_TRACK_EVE
         return this._muted;
     }
 
-    stop() {
+    stop(): void {
         WebRTCModule.mediaStreamTrackSetEnabled(this.id, false);
         this.readyState = 'ended';
         // TODO: save some stopped flag?
@@ -69,7 +68,7 @@ class MediaStreamTrack extends defineCustomEventTarget(...MEDIA_STREAM_TRACK_EVE
      * This is how the reference application (AppRTCMobile) implements camera
      * switching.
      */
-    _switchCamera() {
+    _switchCamera(): void {
         if (this.remote) {
             throw new Error('Not implemented for remote tracks');
         }
@@ -79,15 +78,15 @@ class MediaStreamTrack extends defineCustomEventTarget(...MEDIA_STREAM_TRACK_EVE
         WebRTCModule.mediaStreamTrackSwitchCamera(this.id);
     }
 
-    applyConstraints() {
+    applyConstraints(): never {
         throw new Error('Not implemented.');
     }
 
-    clone() {
+    clone(): never {
         throw new Error('Not implemented.');
     }
 
-    getCapabilities() {
+    getCapabilities(): never {
         throw new Error('Not implemented.');
     }
 
@@ -99,7 +98,7 @@ class MediaStreamTrack extends defineCustomEventTarget(...MEDIA_STREAM_TRACK_EVE
         return deepClone(this._settings);
     }
 
-    release() {
+    release(): void {
         WebRTCModule.mediaStreamTrackRelease(this.id);
     }
 
