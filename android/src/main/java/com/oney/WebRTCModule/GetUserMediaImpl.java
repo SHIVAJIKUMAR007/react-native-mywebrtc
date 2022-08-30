@@ -17,9 +17,10 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.oney.WebRTCModule.videoEffect.ProcessorProvider;
-import com.oney.WebRTCModule.videoEffect.VideoEffectProcessor;
-import com.oney.WebRTCModule.videoEffect.VideoFrameProcessor;
+
+import com.oney.WebRTCModule.videoEffects.ProcessorProvider;
+import com.oney.WebRTCModule.videoEffects.VideoEffectProcessor;
+import com.oney.WebRTCModule.videoEffects.VideoFrameProcessor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -394,30 +395,32 @@ class GetUserMediaImpl {
         return track;
     }
 
+    /**
+     * Set video effect to the TrackPrivate corresponding to the trackId with the
+     * help of VideoEffectProcessor corresponding to the name.
+     * 
+     * @param trackId TrackPrivate id
+     * @param name    VideoEffectProcessor name
+     */
     void setVideoEffect(String trackId, String name) {
         TrackPrivate track = tracks.get(trackId);
 
         if (track != null && track.videoCaptureController instanceof CameraCaptureController) {
             VideoSource videoSource = (VideoSource) track.mediaSource;
-            SurfaceTextureHelper surfaceTextureHelper = (SurfaceTextureHelper) track.surfaceTextureHelper;
-            /// here set videoSource processer VideoProcessor
-
-            if (surfaceTextureHelper == null) {
-                Log.d(TAG, "Error creating SurfaceTextureHelper");
-                return;
-            }
+            SurfaceTextureHelper surfaceTextureHelper = track.surfaceTextureHelper;
 
             if (name != null) {
                 VideoFrameProcessor videoFrameProcessor = ProcessorProvider.getProcessor(name);
 
                 if (videoFrameProcessor == null) {
-                    Log.d(TAG, "no videoFrameProcessor associated with this name");
+                    Log.e(TAG, "no videoFrameProcessor associated with this name");
                     return;
                 }
 
                 VideoEffectProcessor videoEffectProcessor = new VideoEffectProcessor(videoFrameProcessor,
                         surfaceTextureHelper);
                 videoSource.setVideoProcessor(videoEffectProcessor);
+
             } else {
                 videoSource.setVideoProcessor(null);
             }

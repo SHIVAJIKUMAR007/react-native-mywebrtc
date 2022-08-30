@@ -1,7 +1,15 @@
-package com.oney.WebRTCModule.videoEffect;
+package com.oney.WebRTCModule.videoEffects;
 
-import org.webrtc.*;
+import org.webrtc.SurfaceTextureHelper;
+import org.webrtc.VideoFrame;
+import org.webrtc.VideoProcessor;
+import org.webrtc.VideoSink;
 
+/**
+ * Lightweight abstraction for an object that can receive video frames, process
+ * and add effects in
+ * them, and pass them on to another object.
+ */
 public class VideoEffectProcessor implements VideoProcessor {
     private VideoSink mSink;
     final private SurfaceTextureHelper textureHelper;
@@ -27,6 +35,14 @@ public class VideoEffectProcessor implements VideoProcessor {
         mSink = sink;
     }
 
+    /**
+     * Called just after the frame is captured.
+     * Will process the VideoFrame with the help of VideoFrameProcessor and send the
+     * processed
+     * VideoFrame back to webrtc using onFrame method in VideoSink.
+     * 
+     * @param frame raw VideoFrame received from webrtc.
+     */
     @Override
     public void onFrameCaptured(VideoFrame frame) {
         VideoFrame outputFrame = videoFrameProcessor.process(frame, textureHelper);
@@ -38,5 +54,4 @@ public class VideoEffectProcessor implements VideoProcessor {
         mSink.onFrame(outputFrame);
         frame.release();
     }
-
 }

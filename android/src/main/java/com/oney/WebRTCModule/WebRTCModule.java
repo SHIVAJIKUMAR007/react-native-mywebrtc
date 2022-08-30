@@ -606,6 +606,13 @@ public class WebRTCModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void mediaStreamTrackSetVideoEffect(String id, String name) {
+        ThreadUtils.runOnExecutor(() -> {
+            getUserMediaImpl.setVideoEffect(id, name);
+        });
+    }
+
+    @ReactMethod
     public void peerConnectionSetConfiguration(ReadableMap configuration,
             int id) {
         ThreadUtils.runOnExecutor(() -> {
@@ -965,13 +972,5 @@ public class WebRTCModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void removeListeners(Integer count) {
         // Keep: Required for RN built in Event Emitter Calls.
-    }
-
-    @ReactMethod
-    public void setVideoEffect(String id, String name) {
-        // regster video effect here
-        ThreadUtils.runOnExecutor(() -> {
-            getUserMediaImpl.setVideoEffect(id, name);
-        });
     }
 }

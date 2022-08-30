@@ -60,6 +60,16 @@ class MediaStreamTrack extends defineCustomEventTarget(...MEDIA_STREAM_TRACK_EVE
         this.readyState = 'ended';
         // TODO: save some stopped flag?
     }
+    
+    _setVideoEffect(name:String){
+        if (this.remote) {
+            throw new Error('Not implemented for remote tracks');
+        }
+        if (this.kind !== 'video') {
+            throw new Error('Only implemented for video tracks');
+        }
+        WebRTCModule.mediaStreamTrackSetVideoEffect(this.id, name);
+    }
 
     /**
      * Private / custom API for switching the cameras on the fly, without the
@@ -100,16 +110,6 @@ class MediaStreamTrack extends defineCustomEventTarget(...MEDIA_STREAM_TRACK_EVE
 
     release(): void {
         WebRTCModule.mediaStreamTrackRelease(this.id);
-    }
-
-    _setVideoEffect(name:String){
-        if (this.remote) {
-            throw new Error('Not implemented for remote tracks');
-        }
-        if (this.kind !== 'video') {
-            throw new Error('Only implemented for video tracks');
-        }
-        WebRTCModule.setVideoEffect(this.id, name);
     }
 }
 
